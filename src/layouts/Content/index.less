@@ -1,0 +1,28 @@
+@import '../../assets/styles/vars.less';
+
+.content-block {
+  overflow-y: auto;
+  min-height: calc(100% - 28px);
+  padding: 24px 56px;
+  .background-color(#fff);
+
+  .page-header {
+    font-size: 20px;
+    font-weight: 600;
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid #dedede;
+    margin-bottom: 36px;
+    letter-spacing: 1px;
+  }
+
+  &-box {
+    padding: 14px 16px;
+    background-color: #fafafa;
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

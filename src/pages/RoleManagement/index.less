@@ -1,0 +1,33 @@
+@import "../../assets/styles/vars.less";
+
+.role-card {
+  float: left;
+  width: 350px;
+  margin-right: 20px;
+
+  .ant-card-body {
+    height: calc(100vh - (@header-height + 150px) * 2);
+    overflow-y: auto;
+  }
+
+  &-actions {
+    float: right;
+  }
+}
+
+.action-group {
+  float: left;
+  max-height: calc(100vh - (@header-height + 150px) * 2);
+  width: calc(100% - 370px);
+
+  .ant-card-body {
+    height: calc(100vh - (@header-height + 180px) * 2);;
+    overflow-y: auto;
+  }
+}
+.action-btn-group {
+  float: left;
+  text-align: right;
+  padding-top: 20px;
+  width: calc(100% - 370px);
+}

@@ -1,0 +1,21 @@
+@import '../assets//styles/vars.less';
+
+.wrapper {
+  height: @full-height;
+  overflow: hidden;
+
+  .container {
+    height: calc(100vh - @header-height);
+    flex-direction: row;
+    overflow: hidden;
+
+    .kant-sidermenu-content {
+      z-index: 9;
+    }
+
+    &-query-block {
+      background: #f9f9f9;
+      padding: 30px 40px;
+    }
+  }
+}
