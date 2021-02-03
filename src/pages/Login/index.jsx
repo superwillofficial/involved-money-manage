@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Form, Button, Input, Row, Col, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import useStore from './store';
+import Pic from '../../assets/images/icon-rec.png';
 import './index.less';
 
 const FormItem = Form.Item;
@@ -29,7 +30,7 @@ export default () => useObserver(() => {
   return (
     <div className="login-wrapper">
       <div className="login-header">
-        {/* <img className="bank-img" src={bankImg} alt="" /> */}
+        <img className="icon-img" src={Pic} alt="" />
         <span className="divider"></span>
         <span className="system-name">{store.sysConsts.SYSYTEM_NAME}</span>
       </div>

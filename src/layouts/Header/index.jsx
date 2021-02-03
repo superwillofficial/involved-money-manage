@@ -8,7 +8,7 @@ import LoadingBar from './LoadingBar';
 import Modal from './Modal';
 import { SYSYTEM_NAME } from '@config/sysConsts';
 import './index.less';
-import Pic from '../../assets/images/avatar.png';
+import Pic from '../../assets/images/icon.png';
 
 const { Header } = Layout;
 
@@ -17,7 +17,7 @@ export default (props) => useObserver(() =>{
     <Header className="header-block">
 
       <div className="header-block-title">
-        {/* <img className="header-block-title-logo" src={Pic} alt="Logo" /> */}
+        <img className="header-block-title-logo" src={Pic} alt="Logo" />
         {SYSYTEM_NAME}
       </div>
 

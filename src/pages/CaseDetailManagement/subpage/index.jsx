@@ -4,7 +4,6 @@ import { Collapse } from "antd";
 import BackButton from './BackButton';
 import CaseInfo from './CaseInfo';
 import SuspectInfo from './SuspectInfo';
-import VictimInfo from './VictimInfo';
 import { useStore } from '../store';
 
 export default () => {
@@ -32,10 +31,6 @@ export default () => {
         <Collapse.Panel header="当事人信息" key="2">
           <SuspectInfo />
         </Collapse.Panel>
-
-        {/* <Collapse.Panel header="受害人信息" key="3">
-          <VictimInfo />
-        </Collapse.Panel> */}
 
       </Collapse>
 

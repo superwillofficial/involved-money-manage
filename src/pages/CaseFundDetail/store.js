@@ -7,20 +7,25 @@ import { useStore as useGlobalStore } from '@stores';
 import BaseStore from '@stores/BaseStore';
 
 /**
- * 案件详情管理
+ * 案件资金详情
  * @class Store
  */
 class Store extends BaseStore {
   @observable _case = {};
+  @observable _originalFund = [];
+  @observable _fund = [];
   @observable _suspect = {};
+  @observable _currentVictim = {};
+  @observable _currentFundManagement = {};
   @observable _id = '';
+  @observable _currentSubAcct = '';
   @observable _page = {
     total: 0,
     pageSize: 10,
     current: 1,
   };
   @observable _query = {};
-  @observable _type = 'add';
+  @observable _type = '';
 
   constructor(global) {
     super();
@@ -38,6 +43,11 @@ class Store extends BaseStore {
   }
 
   @computed
+  get currentSubAcct() {
+    return this._currentSubAcct;
+  }
+
+  @computed
   get page() {
     return toJS(this._page);
   }
@@ -48,8 +58,33 @@ class Store extends BaseStore {
   }
 
   @computed
+  get originalFund() {
+    return toJS(this._originalFund);
+  }
+
+  @computed
+  get fund() {
+    return toJS(this._fund);
+  }
+
+  @computed
   get suspect() {
     return toJS(this._suspect);
+  }
+
+  @computed
+  get currentVictim() {
+    return toJS(this._currentVictim);
+  }
+
+  @computed
+  get currentFundManagement() {
+    return toJS(this._currentFundManagement);
+  }
+
+  @computed
+  get caseStore() {
+    return this.global.caseStore;
   }
 
   @action
@@ -57,22 +92,54 @@ class Store extends BaseStore {
     const res = await this.axios({
       method: 'GET',
       url: `${this.baseUrl}/api/v1/caseDetail/${id}`,
+      query: {
+        showVictim: true,
+      },
+    });
+    this.setValue('case', _.get(res, 'data', {}));
+  }
+
+  @action
+  getCaseFundDetail = async (id) => {
+    const res = await this.axios({
+      method: 'GET',
+      url: `${this.baseUrl}/api/v1/case-fund/detail/${id}`,
       query: {},
     });
-    // console.log("res========", res);
-    this.setValue('case', _.get(res, 'data', {}));
+    this.setValue('originalFund', _.get(res, 'data', []));
+    this.setValue('fund', _.get(res, 'data', []));
+  }
+
+  @action
+  onApply= async () => {
+    const res = await this.axios({
+      method: 'PUT',
+      url: `${this.baseUrl}/api/v1/case-fund/apply/${this.case.id}`,
+    });
+    return this.onHandleResult(res);
+  }
+
+  @action
+  onAudit= async (body) => {
+    const res = await this.axios({
+      method: 'PUT',
+      url: `${this.baseUrl}/api/v1/case-fund/audit/${this.case.id}`,
+      body: {
+        ...body
+      },
+    });
+    return this.onHandleResult(res);
   }
 
   @action
   addParty = async (party) => {
     const res = await this.axios({
       method: 'POST',
-      url: `${this.baseUrl}/api/v1/case-party/${this.id}`,
+      url: `${this.baseUrl}/api/v1/case-party/${this.case.id}`,
       body: [
         ...party,
       ],
     });
-    this.getCaseDetail(this.id);
     return this.onHandleResult(res);
   }
 
@@ -80,12 +147,25 @@ class Store extends BaseStore {
   editParty = async (party) => {
     const res = await this.axios({
       method: 'PUT',
-      url: `${this.baseUrl}/api/v1/case-party/${this.id}/${this.suspect.partyId}`,
+      url: `${this.baseUrl}/api/v1/case-party/${this.case.id}/${this.currentVictim.partyId}`,
       body: {
         ...party,
       },
     });
-    this.getCaseDetail(this.id);
+    return this.onHandleResult(res);
+  }
+
+  @action
+  deleteParty = async (partyId) => {
+    const res = await this.axios({
+      method: 'DELETE',
+      url: `${this.baseUrl}/api/v1/case-party/${this.case.id}`,
+      body: [
+        ...partyId,
+      ],
+    });
+    this.getCaseDetail(this.case.id);
+    this.getCaseFundDetail(this.case.id);
     return this.onHandleResult(res);
   }
 
@@ -93,12 +173,9 @@ class Store extends BaseStore {
   onDelete = async (id) => {
     const res = await this.axios({
       method: 'DELETE',
-      url: `${this.baseUrl}/api/v1/case-party/${this.id}`,
-      body: [
-        id
-      ]
+      url: `${this.baseUrl}/api/v1/case-party/${id}`,
     });
-    this.getCaseDetail(this.id);
+    return this.onHandleResult(res);
   }
 
   onHandleResult = (res) => {

@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
-import { Button, Form, Col, DatePicker, Input, Radio } from "antd";
+import { Button, Form, Col, DatePicker, Input, Radio, Select } from "antd";
 import moment from 'moment';
 import { useStore } from "../store";
 import { dataProcess } from '@utils/functions';
@@ -54,6 +54,7 @@ export default () => useObserver(() => {
       <Form
         form={form}
         colon={true}
+        className="margin-bottom-long"
         {...formItemLayout}
       >
         {codeOrParty === 'code' ? (
@@ -78,6 +79,29 @@ export default () => useObserver(() => {
                   }}
                   format="YYYY-MM-DD"
                 />
+              </FormItem>
+            </Col>
+            <Col span={6}>
+              <FormItem
+                label="状态"
+                name="status"
+              >
+                <Select
+                  placeholder="请选择状态"
+                >
+                  {
+                    _.map(_.omit(store.consts.CASESTATUS, [
+                      'ABANDONED',
+                      'INPUTING',
+                      'INPUT_REVIEWING',
+                      'INPUT_REVIEW_FAILED',
+                      'BILLING_ADJUSTMENT',
+                      'BILLING_RECHECKING',
+                    ]), v => <Select.Option key={v} value={v}>
+                      {store.consts.CASESTATUS_DESC[v]}</Select.Option>
+                    )
+                  }
+                </Select>
               </FormItem>
             </Col>
           </Fragment>

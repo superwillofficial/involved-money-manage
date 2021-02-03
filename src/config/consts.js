@@ -46,28 +46,84 @@ export const GENDER_DESC = {
 };
 
 /**
- * 案件状态(待设计)
+ * 审核状态
+ */
+export const IS_AUDIT = {
+  YES: 0,
+  NO: 1,
+};
+export const IS_AUDIT_DESC = {
+  [IS_AUDIT.YES]: '通过',
+  [IS_AUDIT.NO]: '不通过',
+};
+
+/**
+ * 案件状态
  */
 export const CASESTATUS = {
-  INIT: 1,
-  UNPAID: 2,
-  FAILED: 0,
-  WARNING: -2,
+  ABANDONED: -1,
+  INPUTING: 0,
+  INPUT_REVIEWING: 1,
+  INPUT_REVIEW_FAILED: 2,
+  UNPAID: 3,
+  PAID: 4,
+  RECHECKING: 5,
+  RECHECK_FAILED: 6,
+  RECHECKED: 7,
+  PAYING: 8,
+  PAYMENT_ERROR: 9,
+  BILLING_ADJUSTMENT: 10,
+  BILLING_RECHECKING: 11,
+  COMPENSATED: 12,
 };
-
 export const CASESTATUS_DESC = {
-  [CASESTATUS.INIT]: '初录入',
+  [CASESTATUS.ABANDONED]: '作废',
+  [CASESTATUS.INPUTING]: '录入状态',
+  [CASESTATUS.INPUT_REVIEWING]: '提交录入审核',
+  [CASESTATUS.INPUT_REVIEW_FAILED]: '录入审核不通过',
   [CASESTATUS.UNPAID]: '待缴费',
-  [CASESTATUS.FAILED]: '失败',
-  [CASESTATUS.WARNING]: '警告',
+  [CASESTATUS.PAID]: '确认缴费',
+  [CASESTATUS.RECHECKING]: '提交复核',
+  [CASESTATUS.RECHECK_FAILED]: '复核不通过',
+  [CASESTATUS.RECHECKED]: '复核完成',
+  [CASESTATUS.PAYING]: '支付中',
+  [CASESTATUS.PAYMENT_ERROR]: '支付异常',
+  [CASESTATUS.BILLING_ADJUSTMENT]: '出账调整',
+  [CASESTATUS.BILLING_RECHECKING]: '出账调整复核中',
+  [CASESTATUS.COMPENSATED]: '赔付完成',
+};
+export const CASESTATUS_COLOR = {
+  [CASESTATUS.ABANDONED]: 'error',
+  [CASESTATUS.INPUTING]: 'default',
+  [CASESTATUS.INPUT_REVIEWING]: 'processing',
+  [CASESTATUS.INPUT_REVIEW_FAILED]: 'error',
+  [CASESTATUS.UNPAID]: 'processing',
+  [CASESTATUS.PAID]: 'success',
+  [CASESTATUS.RECHECKING]: 'processing',
+  [CASESTATUS.RECHECK_FAILED]: 'error',
+  [CASESTATUS.RECHECKED]: 'success',
+  [CASESTATUS.PAYING]: 'processing',
+  [CASESTATUS.PAYMENT_ERROR]: 'warning',
+  [CASESTATUS.BILLING_ADJUSTMENT]: 'default',
+  [CASESTATUS.BILLING_RECHECKING]: 'processing',
+  [CASESTATUS.COMPENSATED]: 'success',
 };
 
-export const CASESTATUS_COLOR = {
-  [CASESTATUS.INIT]: 'default',
-  [CASESTATUS.UNPAID]: 'processing',
-  [CASESTATUS.FAILED]: 'error',
-  [CASESTATUS.WARNING]: 'warning',
+/**
+ * 支付类型
+ */
+export const PAYMENT_TYPE = {
+  TO_VICTIM: 0,
+  TO_SUSPECT: 1,
+  TO_TREASURY: 2,
+  // SPECIAL: -1,
 };
+export const PAYMENT_TYPE_DESC = {
+  [PAYMENT_TYPE.TO_VICTIM]: '赔偿支付',
+  [PAYMENT_TYPE.TO_SUSPECT]: '退还',
+  [PAYMENT_TYPE.TO_TREASURY]: '上缴/罚没',
+};
+
 /**
  * 结算方式
  */
@@ -76,7 +132,6 @@ export const SETTLETYPE = {
   TRANSFER: '02',
   CHEQUE: '03',
 };
-
 export const SETTLETYPE_DESC = {
   [SETTLETYPE.CASH]: '现金',
   [SETTLETYPE.TRANSFER]: '转账',
@@ -87,8 +142,8 @@ export const SETTLETYPE_DESC = {
  * 当事人类型
  */
 export const PARTY = {
-  SUSPECT: 1,
-  VICTIM: 2,
+  SUSPECT: '1',
+  VICTIM: '2',
 };
 export const PARTY_DESC = {
   [PARTY.SUSPECT]: '赔偿方',
@@ -96,6 +151,23 @@ export const PARTY_DESC = {
 };
 
 /**
+ * 启用状态
+ */
+export const ENABLE = {
+  ENABLE: '0',
+  DISABLE: '1',
+};
+export const ENABLE_DESC = {
+  [ENABLE.ENABLE]: '启用',
+  [ENABLE.DISABLE]: '停用',
+};
+export const ENABLE_COLOR = {
+  [ENABLE.ENABLE]: 'processing',
+  [ENABLE.DISABLE]: 'error',
+};
+
+/**
+
  * 数据请求返回码(错误类型)
  */
 export const RESMSG = {

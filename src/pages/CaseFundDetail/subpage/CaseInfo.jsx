@@ -25,18 +25,18 @@ export default () => useObserver(() => {
   return (
     <Fragment>
       <Row>
+        <Col {...lableCol}>案件号：</Col>
+        <Col {...contentCol}>{data.caseNo}</Col>
+        <Col></Col>
         <Col {...lableCol}>案件名称：</Col>
         <Col {...contentCol}>{data.caseName}</Col>
-        <Col></Col>
-        <Col {...lableCol}>办理单位：</Col>
-        <Col {...contentCol}>{data.department}</Col>
       </Row>
       <Row>
+        <Col {...lableCol}>办理单位：</Col>
+        <Col {...contentCol}>{data.department}</Col>
+        <Col></Col>
         <Col {...lableCol}>受理民警：</Col>
         <Col {...contentCol}>{data.policeName}</Col>
-        <Col></Col>
-        <Col {...lableCol}>联系方式：</Col>
-        <Col {...contentCol}>{data.phone}</Col>
       </Row>
     </Fragment>
   );

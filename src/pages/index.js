@@ -13,4 +13,9 @@ export { default as RegionManagement } from './RegionManagement';
 
 export { default as CaseManagement } from './CaseManagement';
 export { default as CaseDetailManagement } from './CaseDetailManagement';
-export { default as CaseInput } from './CaseInput';
+export { default as CaseFundManagement } from './CaseFundManagement';
+export { default as CaseFundAudit } from './CaseFundAudit';
+export { default as CaseFundDetail } from './CaseFundDetail';
+
+// 非税账户管理
+export { default as NonTexAccountManagement } from './NonTexAccountManagement';

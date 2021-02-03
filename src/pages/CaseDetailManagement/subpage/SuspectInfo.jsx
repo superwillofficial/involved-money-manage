@@ -33,15 +33,16 @@ const useColumns = () => {
               onClick={() => {
                 store
                   .setValue('suspect', record)
-                  .setValue('type', 'alter')
-                  .openModal('alter');
+                  .setValue('type', 'edit')
+                  .openModal('edit');
+
               }}
             >修改</Button>
             <Button type="link">打印缴款单</Button>
             <Button type="link">分配子账户</Button>
             <Popconfirm
               title="确认要删除?"
-              onConfirm={async () => await store.onDelete(record.id)}
+              onConfirm={async () => await store.onDelete(record.partyId)}
             >
               <Button type="link" icon={<DeleteOutlined />} danger />
             </Popconfirm>
@@ -66,7 +67,7 @@ export default () => useObserver(() => {
         className='button-bottom-short'
         icon={<PlusOutlined />}
         onClick={() => {
-          store.setValue('type', 'add').openModal('add');
+          store.setValue('type', 'create').openModal('create');
         }}
       />
       <Table

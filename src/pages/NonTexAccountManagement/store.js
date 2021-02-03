@@ -1,26 +1,18 @@
 import React from 'react';
 import { useLocalStore } from 'mobx-react';
 import { observable, action, computed, toJS } from 'mobx';
-
 import _ from 'lodash';
 import { useStore as useGlobalStore } from '@stores';
 import BaseStore from '@stores/BaseStore';
 
 /**
- * 案件详情管理
+ * 非税账户管理
  * @class Store
  */
 class Store extends BaseStore {
-  @observable _case = {};
-  @observable _suspect = {};
-  @observable _id = '';
-  @observable _page = {
-    total: 0,
-    pageSize: 10,
-    current: 1,
-  };
-  @observable _query = {};
-  @observable _type = 'add';
+  @observable _nonTexAccts = [];
+  @observable _type = '';
+  @observable _nonTex = {};
 
   constructor(global) {
     super();
@@ -33,72 +25,86 @@ class Store extends BaseStore {
   }
 
   @computed
-  get id() {
-    return this._id;
+  get nonTex() {
+    return this._nonTex;
+  }
+
+
+  @computed
+  get nonTexAccts() {
+    return toJS(this._nonTexAccts);
   }
 
   @computed
-  get page() {
-    return toJS(this._page);
+  get typeDesc() {
+    return this._type === 'create' ? '新增非税账户' : '编辑非税账户';
   }
 
-  @computed
-  get case() {
-    return toJS(this._case);
-  }
-
-  @computed
-  get suspect() {
-    return toJS(this._suspect);
-  }
-
+  // 列表查询非税账户（不分页）
   @action
-  getCaseDetail = async (id) => {
+  getNonTexAccts = async () => {
     const res = await this.axios({
       method: 'GET',
-      url: `${this.baseUrl}/api/v1/caseDetail/${id}`,
-      query: {},
+      url: `${this.baseUrl}/api/v1/nonTaxAcct`,
     });
-    // console.log("res========", res);
-    this.setValue('case', _.get(res, 'data', {}));
+    this
+      .setValue('nonTexAccts', _.get(res, 'data', []));
   }
-
+  
+  // 新增非税账户
   @action
-  addParty = async (party) => {
+  setNonTexAcct = async (body) => {
     const res = await this.axios({
       method: 'POST',
-      url: `${this.baseUrl}/api/v1/case-party/${this.id}`,
-      body: [
-        ...party,
-      ],
-    });
-    this.getCaseDetail(this.id);
-    return this.onHandleResult(res);
-  }
-
-  @action
-  editParty = async (party) => {
-    const res = await this.axios({
-      method: 'PUT',
-      url: `${this.baseUrl}/api/v1/case-party/${this.id}/${this.suspect.partyId}`,
+      url: `${this.baseUrl}/api/v1/nonTaxAcct`,
       body: {
-        ...party,
+        ...body,
       },
     });
-    this.getCaseDetail(this.id);
-    return this.onHandleResult(res);
+    this.getNonTexAccts();
+  }
+  // 修改非税账户
+  @action
+  updateNonTexAcct = async (body) => {
+    const id = this._nonTex.id;
+    const res = await this.axios({
+      method: 'PUT',
+      url: `${this.baseUrl}/api/v1/nonTaxAcct/${id}`,
+      body: {
+        ...body,
+      },
+    });
+    this.getNonTexAccts();
   }
 
+  // 删除非税账户
   @action
-  onDelete = async (id) => {
+  removeAcct = async (id) => {
     const res = await this.axios({
       method: 'DELETE',
-      url: `${this.baseUrl}/api/v1/case-party/${this.id}`,
-      body: [
-        id
-      ]
+      url: `${this.baseUrl}/api/v1/nonTaxAcct/${id}`,
     });
-    this.getCaseDetail(this.id);
+    this.getNonTexAccts();
+  }
+
+  // 启用非税账户
+  @action
+  enableAcct = async (id) => {
+    const res = await this.axios({
+      method: 'PUT',
+      url: `${this.baseUrl}/api/v1/nonTaxAcct/enable/${id}`,
+    });
+    this.getNonTexAccts();
+  }
+
+  // 停用用非税账户
+  @action
+  disableAcct = async (id) => {
+    const res = await this.axios({
+      method: 'PUT',
+      url: `${this.baseUrl}/api/v1/nonTaxAcct/disable/${id}`,
+    });
+    this.getNonTexAccts();
   }
 
   onHandleResult = (res) => {
@@ -113,6 +119,7 @@ class Store extends BaseStore {
       current: 1,
     });
   }
+
 }
 
 const storeContext = React.createContext(null);

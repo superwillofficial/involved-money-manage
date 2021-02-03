@@ -14,8 +14,8 @@ const useColumns = () => {
     onColumn("案件号", "caseNo"),
     onColumn("案件名称", "caseName"),
     // onColumn("受理部门id", "departmentId"),
-    // onColumn("受理部门名称", "department"),
-    onColumn("当事人", "partys", {
+    onColumn("受理单位", "department"),
+    onColumn("嫌疑人", "partys", {
       render: (text, record) => {
         const suspect = text
           .filter(el => store.consts.PARTY_DESC[el.type] === '赔偿方')
@@ -24,22 +24,27 @@ const useColumns = () => {
         return (
           <Fragment>
             { _.isEmpty(suspect) ? (
-              <Fragment>
-                <span className='grey-font'>暂无当事人</span>
-                &nbsp; &nbsp;
-                <Button
-                  type="primary"
-                  shape="round"
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    console.log('currentCase', record);
-                    store.setValue('currentCase', record);
-                    store.setValue('type', 'party').openModal('party');
-                  }}
-                >新增当事人</Button>
-              </Fragment>
+              <span className='grey-font'>暂无当事人</span>
             ) : (
               <span>{suspect}</span>
+            )
+            }
+          </Fragment>
+        );
+      }
+    }),
+    onColumn("被害人", "partys", {
+      render: (text, record) => {
+        const victim = text
+          .filter(el => store.consts.PARTY_DESC[el.type] === '受偿方')
+          .map(el => el.partyName)
+          .join('、');
+        return (
+          <Fragment>
+            { _.isEmpty(victim) ? (
+              <span className='grey-font'>暂无当事人</span>
+            ) : (
+              <span>{victim}</span>
             )
             }
           </Fragment>
@@ -62,18 +67,21 @@ const useColumns = () => {
         return (
           <Fragment>
             <Link
-              to={`/case-detail/${record.id}`}
+              to={'/case-fund-detail'}
               onClick={() => {
                 store.caseStore.setCase(record);
               }}
             >详情</Link>
-            &nbsp;&nbsp;
-            <Popconfirm
-              title="确认要删除?"
-              onConfirm={() => store.deleteCase(record.id)}
-            >
-              <Button type="link" icon={<DeleteOutlined />} danger />
-            </Popconfirm>
+            {record.status === store.consts.CASESTATUS.RECHECKING ?
+              <Button
+                type="link"
+                onClick={() => {
+                  store
+                    .setValue('case', record)
+                    .setValue('type', 'recheck')
+                    .openModal('recheck');
+                }}
+              >审核</Button> : null}
           </Fragment>
         );
       }
@@ -115,16 +123,6 @@ export default () => useObserver(() => {
   });
   return (
     <Fragment>
-      <Button
-        type="primary"
-        size="large"
-        shape="round"
-        className="button-bottom button-top"
-        icon={<PlusOutlined />}
-        onClick={() => {
-          store.setValue('type', 'input').openModal('input');
-        }}
-      >案件录入</Button>
       <Table
         rowKey="id"
         columns={columns}

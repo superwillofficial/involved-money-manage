@@ -1,0 +1,213 @@
+import React, { useCallback, Fragment, useEffect, useState } from "react";
+import { useObserver } from "mobx-react-lite";
+import _ from "lodash";
+import { Modal, Select, Form, Input, Row, Col } from "antd";
+import { dataProcessingWhenCreatingVictim } from "@utils/functions";
+import { useStore } from "../store";
+
+const FormItem = Form.Item;
+const { Option } = Select;
+
+export default () => useObserver(() => {
+  const store = useStore();
+  const [form] = Form.useForm();
+  const [paymentType, setPaymentType] = useState(store.consts.TO_VICTIM);
+  // 弹窗标题
+  const title = {
+    newSplit: '新增资金拆分',
+    editSplit: '编辑资金拆分',
+  }[store.type];
+
+  const onCancel = () => {
+    form.resetFields();
+    store.closeModal(store.type);
+  };
+
+  const onFinish = async () => {
+    await form.validateFields();
+    const data = form.getFieldsValue();
+
+    let fund = [...store.fund];
+    if(title === '新增资金拆分') {
+      const index = _.findIndex(fund, (el) => {
+        return el.subAcct === store.currentSubAcct;
+      });
+      fund[index].outcomeList.push(data);
+    } else if (title === '编辑资金拆分') {
+      // TODO : 找索引 find the index
+      // const index1 = _.findIndex(fund, (el) => {
+      //   return el.subAcct === store.currentSubAcct;
+      // });
+      // fund[index].outcomeList.push(data);
+    }
+
+    store.setValue('fund', fund);
+
+    onCancel();
+  };
+
+  const handleChange = (value) => {
+    setPaymentType(value);
+  };
+
+  useEffect(() => {
+    if(store.modal[store.type] && title === '编辑资金拆分') {
+      setPaymentType(parseInt(store.currentFundManagement.type, 10));
+      form.setFieldsValue({
+        type: parseInt(store.currentFundManagement.type, 10),
+        partyId: store.currentFundManagement.partyId,
+        nontextId: store.currentFundManagement.nontextId,
+        acctNo: store.currentFundManagement.acctNo,
+        acctName: store.currentFundManagement.acctName,
+        bankName: store.currentFundManagement.bankName,
+        bankCode: store.currentFundManagement.bankCode,
+        amount: store.currentFundManagement.amount,
+        remark: store.currentFundManagement.remark,
+      });
+    }
+  }, [store.modal[store.type] && title === '编辑资金拆分']);
+
+  useEffect(() => {
+    if(store.modal[store.type] && title === '新增资金拆分') {
+      // 默认退还给受害人
+      setPaymentType(store.consts.PAYMENT_TYPE.TO_VICTIM);
+      form.setFieldsValue({
+        type: store.consts.PAYMENT_TYPE.TO_VICTIM,
+      });
+    }
+  }, [store.modal[store.type] && title === '新增资金拆分']);
+
+  // 表单布局
+  const formItemLayout = {
+    labelCol: { span: 5 },
+    wrapperCol: { span: 14 },
+  };
+
+  return (
+    <Fragment>
+      {store.modal[store.type] ? (
+        <Modal
+          width="45%"
+          title={title}
+          visible={store.modal[store.type] && title}
+          onCancel={onCancel}
+          onOk={onFinish}
+        >
+          <Form
+            colon={true}
+            form={form}
+            {...formItemLayout}
+          >
+            <FormItem
+              label="支付类型"
+              name="type"
+              rules={[{ required: true, message: "支付类型必填" }]}
+            >
+              <Select
+                onChange={handleChange}
+                placeholder="请选择..."
+              >
+                {
+                  _.map(store.consts.PAYMENT_TYPE, v => <Select.Option key={v} value={v}>
+                    {store.consts.PAYMENT_TYPE_DESC[v]}</Select.Option>)
+                }
+              </Select>
+            </FormItem>
+            {
+              paymentType === store.consts.PAYMENT_TYPE.TO_VICTIM ? (
+                <FormItem
+                  label="受害人"
+                  name="partyId"
+                  rules={[{ required: true, message: "受害人必填" }]}
+                >
+                  <Select
+                    placeholder="请选择..."
+                  >
+                    {
+                      _.map(
+                        store.case.partys.filter(el => store.consts.PARTY_DESC[el.type] === '受偿方'),
+                        v => <Select.Option key={v.partyId} value={v.partyName}>
+                          {v.partyName}</Select.Option>
+                      )
+                    }
+                  </Select>
+                </FormItem>
+              ) : null
+            }
+            {
+              paymentType === store.consts.PAYMENT_TYPE.TO_SUSPECT ? (
+                <FormItem
+                  label="嫌疑人"
+                  name="partyId"
+                  rules={[{ required: true, message: "嫌疑人必填" }]}
+                >
+                  <Select
+                    placeholder="请选择..."
+                  >
+                    {
+                      _.map(
+                        store.case.partys.filter(el => store.consts.PARTY_DESC[el.type] === '赔偿方'),
+                        v => <Select.Option key={v.partyId} value={v.partyName}>
+                          {v.partyName}</Select.Option>
+                      )
+                    }
+                  </Select>
+                </FormItem>
+              ) : null
+            }
+            {
+              paymentType === store.consts.PAYMENT_TYPE.TO_TREASURY ? (
+                <FormItem
+                  label="非税账户"
+                  name="nontextId"
+                  rules={[{ required: true, message: "非税账户必填" }]}
+                >
+                  <Input placeholder='非税账户' />
+                </FormItem>
+              ) : null
+            }
+            <FormItem
+              label="账户号"
+              name="acctNo"
+              rules={[{ required: true, message: "账户号必填" }]}
+            >
+              <Input placeholder="账户号" />
+            </FormItem>
+            <FormItem
+              label="账户名"
+              name="acctName"
+              rules={[{ required: true, message: "账户名必填" }]}
+            >
+              <Input placeholder="账户名" />
+            </FormItem>
+            <FormItem
+              label="开户行"
+              name="bankName"
+              rules={[{ required: true, message: "开户行必填" }]}
+            >
+              <Input placeholder="开户行" />
+            </FormItem>
+            <FormItem
+              label="开户行行号"
+              name="bankCode"
+            >
+              <Input placeholder="开户行行号" />
+            </FormItem>
+            <FormItem
+              label="金额"
+              name="amount"
+            >
+              <Input placeholder="金额" />
+            </FormItem>
+            <FormItem
+              label="备注"
+              name="remark"
+            >
+              <Input.TextArea placeholder="请输入" />
+            </FormItem>
+          </Form>
+        </Modal>
+      ) : null}
+    </Fragment>
+  );
+});

@@ -7,12 +7,12 @@ import { useStore as useGlobalStore } from '@stores';
 import BaseStore from '@stores/BaseStore';
 
 /**
- * 案件管理
+ * 案件资金审核
  * @class Store
  */
 class Store extends BaseStore {
   @observable _cases = [];
-  @observable _currentCase = {};
+  @observable _case = {};
   @observable _page = {
     total: 0,
     pageSize: 10,
@@ -42,8 +42,8 @@ class Store extends BaseStore {
   }
 
   @computed
-  get currentCase() {
-    return toJS(this._currentCase);
+  get case() {
+    return toJS(this._case);
   }
 
   @computed
@@ -61,6 +61,7 @@ class Store extends BaseStore {
       url: `${this.baseUrl}/api/v1/case`,
       query: {
         ...query,
+        showVictim: true,
         pageSize: this.page.pageSize,
         pageIndex: this.page.current,
       },
@@ -82,6 +83,7 @@ class Store extends BaseStore {
       url: `${this.baseUrl}/api/v1/case/findByParty`,
       query: {
         ...query,
+        showVictim: true,
         pageSize: this.page.pageSize,
         pageIndex: this.page.current,
       },
@@ -97,6 +99,19 @@ class Store extends BaseStore {
   }
 
   @action
+  onAudit= async (body) => {
+    const res = await this.axios({
+      method: 'PUT',
+      url: `${this.baseUrl}/api/v1/case-fund/audit/${this.case.id}`,
+      body: {
+        ...body
+      },
+    });
+    this.getCases();
+    return this.onHandleResult(res);
+  }
+
+  @action
   setCase = async (body) => {
     const res = await this.axios({
       method: 'POST',
@@ -105,31 +120,6 @@ class Store extends BaseStore {
         ...body,
       },
     });
-    this.getCases();
-    return this.onHandleResult(res);
-  }
-
-  @action
-  addParty = async (party) => {
-    const res = await this.axios({
-      method: 'POST',
-      url: `${this.baseUrl}/api/v1/case-party/${this.currentCase.id}`,
-      body: [
-        ...party,
-      ],
-    });
-    this.getCases();
-    return this.onHandleResult(res);
-  }
-
-  @action
-  deleteCase = async (id) => {
-    const res = await this.axios({
-      method: 'DELETE',
-      url: `${this.baseUrl}/api/v1/case/${id}`,
-    });
-    this.getCases();
-    return this.onHandleResult(res);
   }
 
   onHandleResult = (res) => {

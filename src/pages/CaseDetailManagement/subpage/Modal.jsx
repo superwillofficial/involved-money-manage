@@ -2,6 +2,7 @@ import React, { useCallback, Fragment, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
 import { Modal, message, Form, Input, Select } from "antd";
+import { dataProcessingWhenCreatingVictim } from "@utils/functions";
 import { useStore } from "../store";
 
 const FormItem = Form.Item;
@@ -10,23 +11,39 @@ export default () => useObserver(() => {
   const store = useStore();
   const [form] = Form.useForm();
 
+  // 弹窗标题
+  const title = {
+    create: '新增当事人',
+    edit: '修改当事人',
+  }[store.type];
+
   const onCancel = () => {
     form.resetFields();
     store.closeModal(store.type);
   };
 
-  const onFinish = () => {
-    const data = form.getFieldsValue();
-    console.log('data===', data);
+  const onFinish = async () => {
+    let res;
+    if(title === '新增当事人') {
+      const data = dataProcessingWhenCreatingVictim(form.getFieldsValue());
+      res = await store.addParty(data);
+    } else if(title === '修改当事人') {
+      const data = {
+        ...form.getFieldsValue(),
+        type: store.consts.PARTY.SUSPECT,
+      };
+      res = await store.editParty(data);
+    }
+    res ? message.success(`${title}成功!!`) : message.error(`${title}失败`);
     onCancel();
   };
 
   useEffect(() => {
-    if(store.modal[store.type] && store.type === 'alter') {
+    if(store.modal[store.type] && title === '修改当事人') {
       const suspect = store.suspect;
       form.setFieldsValue({
         name: suspect.partyName,
-        IdNo: suspect.idNumber,
+        idNo: suspect.idNumber,
         gender: suspect.gender,
         phone: suspect.phone,
         acctName: suspect.accountName,
@@ -46,8 +63,8 @@ export default () => useObserver(() => {
       {store.modal[store.type] ? (
         <Modal
           width="45%"
-          title={`${store.typeDesc}当事人`}
-          visible={store.modal[store.type]}
+          title={title}
+          visible={store.modal[store.type] && title}
           onCancel={onCancel}
           onOk={onFinish}
         >
@@ -66,7 +83,7 @@ export default () => useObserver(() => {
             </FormItem>
             <FormItem
               label="身份证号"
-              name="IdNo"
+              name="idNo"
               rules={[
                 { required: true, message: '用户名必填' },
                 ({ getFieldValue }) => ({

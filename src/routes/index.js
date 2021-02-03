@@ -29,9 +29,32 @@ module.exports = {
     component: 'CaseDetailManagement', nav: false, exact: true,
   },
 
-  CaseInput: {
-    text: '案件录入', path: '/case-input', parent: 'CaseManagement',
-    component: 'CaseInput', nav: false, exact: true,
+  // 案件资金管理
+  CaseFund: {
+    text: '案件资金管理', path: '/case-fund', parent: 'Index',
+    component: 'CaseFund', nav: true, exact: true,
+  },
+  
+  CaseFundManagement: {
+    text: '案件资金处置', path: '/case-fund-management', parent: 'CaseFund',
+    component: 'CaseFundManagement', nav: true, exact: true,
+  },
+  
+  CaseFundAudit: {
+    text: '案件资金审核', path: '/case-fund-audit', parent: 'CaseFund',
+    component: 'CaseFundAudit', nav: true, exact: true,
+  },
+
+  CaseFundDetail: {
+    text: '案件资金详情', path: '/case-fund-detail', parent: 'CaseFund',
+    component: 'CaseFundDetail', nav: false, exact: true,
+  },
+
+  // 非税账户管理
+  NonTexAccountManagement: {
+    text: '非税账户管理', path: '/non-tex-management', parent: 'Index',
+    component: 'NonTexAccountManagement', nav: true, exact: true,
+
   },
 
   // 系统配置

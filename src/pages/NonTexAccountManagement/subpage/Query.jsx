@@ -86,7 +86,6 @@ export default () => useObserver(() => {
             <FormItem
               label="当事人"
               name="name"
-              rules={[{ required: true, message: "请输入要查询的当事人姓名" }]}
             >
               <Input placeholder="请输入" />
             </FormItem>
