@@ -1,0 +1,35 @@
+@import '../../assets/styles/vars.less';
+
+.header-block {
+  &-menu {
+    .menu-block {
+      .rectangular(auto, calc(@header-height - 2px), calc(@header-height - 2px));
+      border-bottom: 0;
+
+      .menu-block-branch-leaf,
+      .ant-menu-submenu {
+        text-align: center;
+        .rectangular(200px, calc(@header-height - 2px), calc(@header-height - 2px));
+        border-width: 3px;
+      }
+    }
+  }
+}
+
+.menu-block-branch {
+  padding: 10px 0;
+
+  .ant-menu {
+    .menu-block-branch-leaf {
+      .rectangular(auto, 40px, 40px);
+      border-width: 3px;
+
+      &:hover {
+        background-color: #e6f7ff;
+        color: rgba(0, 0, 0, 0.65);
+        border-width: 3px;
+      }
+    }
+  }
+
+}

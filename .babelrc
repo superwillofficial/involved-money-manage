@@ -1,0 +1,17 @@
+{
+  "plugins": [
+    // 为api提供沙箱的垫片方案，不会污染全局的 api
+    ["@babel/plugin-transform-runtime"],
+    // 修饰器
+    ["@babel/plugin-proposal-decorators", {"legacy": true}],
+    // // 按需加载
+    // ["import", {
+    //     "libraryName": "antd",
+    //     "libraryDirectory": "es",
+    //     "style": true
+    //   }, "antd"
+    // ],
+    ["transform-es2015-modules-commonjs"]
+  ],
+  "presets": ["@babel/preset-react", ["@babel/preset-env", { "modules": "commonjs" }]]
+}

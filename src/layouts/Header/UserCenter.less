@@ -1,0 +1,119 @@
+@import "../../assets/styles/vars.less";
+
+.user-drop-down {
+  position: relative;
+  display: inline-flex;
+  .rectangular(auto, @header-height, @header-height);
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    .icon-allow {
+      color: @primary-color;
+      transform: rotate(90deg);
+    }
+
+    & .user-img {
+      .background-color(#f5f7ff);
+
+      & img {
+        .square(40px, 40px);
+      }
+    }
+  }
+
+  & .user-img {
+    display: inline-block;
+    .circle(54px, 54px, 50%, 54px);
+    .background-color(#fff);
+    vertical-align: middle;
+    transition: all 0.2s;
+    margin-right: 16px;
+    cursor: pointer;
+
+    & img {
+      display: inline-block;
+      .circle(46px, 46px, 50%, 46px);
+      margin: 0 auto;
+      text-align: center;
+      transition: all 0.2s;
+      .background-color(#fddfec);
+    }
+  }
+
+  & .user-name {
+    display: inline-block;
+    font-size: 22px;
+    font-family: PingFang-SC-Medium;
+    font-weight: 500;
+    color: rgba(51, 51, 51, 1);
+    line-height: 34px;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+
+  & .icon-allow {
+    font-size: 16px !important;
+    color: #B3B3B3;
+    cursor: pointer;
+    transform: rotate(0);
+    transition: all 0.3s;
+  }
+}
+
+.overlay-container {
+  top: calc(@header-height - 5px) !important;
+  left: -10px !important;
+  background: rgba(255,255,255,1);
+  border: 1px solid fade(@primary-color, 25%);
+  box-shadow: 0px 2px 12px 0px rgba(26,26,26,0.1);
+  border-radius: 4px;
+
+  .menu {
+    text-align: left;
+    padding: 10px 0;
+
+    & .menu-item {
+      position: relative;
+      .rectangular(240px, 50px, 50px);
+      font-size: 18px;
+      font-family: PingFang-SC-Regular;
+      font-weight: 400;
+      padding-left: 20px;
+      margin: 0;
+
+      &:hover {
+        color: @primary-color;
+        background-color: fade(@primary-color, 8%);
+        & .menu-item-icon {
+          color: @primary-color;
+        }
+      }
+
+      & .menu-item-icon {
+        margin-right: 14px;
+        display: inline-block;
+        color: #B3B3B3;
+        font-size: 22px;
+        margin-top: 0;
+      }
+
+      & .menu-item-text {
+        .rectangular(71px, 17px, 48px);
+        font-size: 18px;
+        font-family: PingFang-SC-Regular;
+        font-weight: 400;
+      }
+    }
+
+    & .menu-divider {
+      margin: 10px 0;
+      box-shadow: 0px -0.5px 0px 0.5px rgba(41, 41, 41, 0.08);
+      .background-color(transparent);
+    }
+  }
+}
+
+.dropdown {
+  float: right;
+}
