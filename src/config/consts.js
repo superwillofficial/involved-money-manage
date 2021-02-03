@@ -167,6 +167,7 @@ export const ENABLE_COLOR = {
 };
 
 /**
+
  * 数据请求返回码(错误类型)
  */
 export const RESMSG = {

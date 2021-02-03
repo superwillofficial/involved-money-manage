@@ -35,6 +35,7 @@ const useColumns = () => {
                   .setValue('suspect', record)
                   .setValue('type', 'edit')
                   .openModal('edit');
+
               }}
             >修改</Button>
             <Button type="link">打印缴款单</Button>

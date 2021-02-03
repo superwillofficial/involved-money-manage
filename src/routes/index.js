@@ -54,6 +54,7 @@ module.exports = {
   NonTexAccountManagement: {
     text: '非税账户管理', path: '/non-tex-management', parent: 'Index',
     component: 'NonTexAccountManagement', nav: true, exact: true,
+
   },
 
   // 系统配置
