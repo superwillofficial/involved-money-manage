@@ -2,7 +2,7 @@ import React, { useCallback, useRef, Fragment, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
 import { Modal, message, Form, Input, Select, Row, Col } from "antd";
-import { dataProcessingWhenCreatingVictim } from "@utils/functions";
+import { dataProcessingWhenCreatingSuspect } from "@utils/functions";
 import { useStore } from "../store";
 
 const FormItem = Form.Item;
@@ -22,7 +22,7 @@ export default () => useObserver(() => {
     store.closeModal(store.type);
   };
   const onFinish = async () => {
-    const res = await store.addParty(dataProcessingWhenCreatingVictim(form.getFieldsValue()));
+    const res = await store.addParty(dataProcessingWhenCreatingSuspect(form.getFieldsValue()));
     res ? message.success('新增当事人成功！') : message.error('新增失败');
     onCancel();
   };

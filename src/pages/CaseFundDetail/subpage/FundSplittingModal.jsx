@@ -2,7 +2,7 @@ import React, { useCallback, Fragment, useEffect, useState } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
 import { Modal, Select, Form, Input, Row, Col } from "antd";
-import { dataProcessingWhenCreatingVictim } from "@utils/functions";
+import { fundDistPrc } from "@utils/functions";
 import { useStore } from "../store";
 
 const FormItem = Form.Item;
@@ -12,6 +12,7 @@ export default () => useObserver(() => {
   const store = useStore();
   const [form] = Form.useForm();
   const [paymentType, setPaymentType] = useState(store.consts.TO_VICTIM);
+  const [inputDisabled, setInputDisabled] = useState(true);
   // 弹窗标题
   const title = {
     newSplit: '新增资金拆分',
@@ -28,7 +29,7 @@ export default () => useObserver(() => {
     const data = form.getFieldsValue();
 
     let fund = [...store.fund];
-    if(title === '新增资金拆分') {
+    if (title === '新增资金拆分') {
       const index = _.findIndex(fund, (el) => {
         return el.subAcct === store.currentSubAcct;
       });
@@ -47,11 +48,34 @@ export default () => useObserver(() => {
   };
 
   const handleChange = (value) => {
+    // 支付类型变更时，清空其它输入控件已有输入
+    form.resetFields([
+      'partyId',
+      'acctNo',
+      'acctName',
+      'nontextId',
+      'bankName',
+      'bankCode',
+      'amount',
+      'remark',
+    ]);
     setPaymentType(value);
+
+    // TODO:
+    // 仅当支付类型不在以下三项时，账户信息才允许修改
+    // if (
+    //   paymentType === store.consts.TO_VICTIM ||
+    //   paymentType === store.consts.TO_SUSPECT ||
+    //   paymentType === store.consts.TO_TREASURY
+    // ) {
+    //   setInputDisabled(true);
+    // } else {
+    //   setInputDisabled(false);
+    // }
   };
 
   useEffect(() => {
-    if(store.modal[store.type] && title === '编辑资金拆分') {
+    if (store.modal[store.type] && title === '编辑资金拆分') {
       setPaymentType(parseInt(store.currentFundManagement.type, 10));
       form.setFieldsValue({
         type: parseInt(store.currentFundManagement.type, 10),
@@ -68,7 +92,7 @@ export default () => useObserver(() => {
   }, [store.modal[store.type] && title === '编辑资金拆分']);
 
   useEffect(() => {
-    if(store.modal[store.type] && title === '新增资金拆分') {
+    if (store.modal[store.type] && title === '新增资金拆分') {
       // 默认退还给受害人
       setPaymentType(store.consts.PAYMENT_TYPE.TO_VICTIM);
       form.setFieldsValue({
@@ -76,6 +100,10 @@ export default () => useObserver(() => {
       });
     }
   }, [store.modal[store.type] && title === '新增资金拆分']);
+
+  useEffect(() => {
+    store.getNonTexAccts();
+  }, []);
 
   // 表单布局
   const formItemLayout = {
@@ -121,6 +149,16 @@ export default () => useObserver(() => {
                   rules={[{ required: true, message: "受害人必填" }]}
                 >
                   <Select
+                    onSelect={(value, obj) => {
+                      const party = store.case.partys.filter(
+                        el => String(el.partyId) === obj.key)[0];
+                      form.setFieldsValue({
+                        acctNo: party.accountNumber,
+                        acctName: party.accountName,
+                        bankName: party.bankName,
+                        bankCode: party.bankCode,
+                      });
+                    }}
                     placeholder="请选择..."
                   >
                     {
@@ -142,6 +180,16 @@ export default () => useObserver(() => {
                   rules={[{ required: true, message: "嫌疑人必填" }]}
                 >
                   <Select
+                    onSelect={(value, obj) => {
+                      const party = store.case.partys.filter(
+                        el => String(el.partyId) === obj.key)[0];
+                      form.setFieldsValue({
+                        acctNo: party.accountNumber,
+                        acctName: party.accountName,
+                        bankName: party.bankName,
+                        bankCode: party.bankCode,
+                      });
+                    }}
                     placeholder="请选择..."
                   >
                     {
@@ -162,36 +210,53 @@ export default () => useObserver(() => {
                   name="nontextId"
                   rules={[{ required: true, message: "非税账户必填" }]}
                 >
-                  <Input placeholder='非税账户' />
+                  <Select
+                    onSelect={(value, obj) => {
+                      const nonTexAcct = store.nonTexAccts.filter(
+                        el => el.acctNo === obj.key)[0];
+                      form.setFieldsValue({
+                        acctNo: nonTexAcct.acctNo,
+                        acctName: nonTexAcct.acctName,
+                        bankName: nonTexAcct.bankName,
+                        bankCode: nonTexAcct.bankCode,
+                      });
+                    }}
+                    placeholder="请选择..."
+                  >
+                    {
+                      _.map(
+                        store.nonTexAccts,
+                        v => <Select.Option key={v.acctNo} value={v.acctNo}>
+                          {v.acctName}</Select.Option>
+                      )
+                    }
+                  </Select>
                 </FormItem>
               ) : null
             }
             <FormItem
               label="账户号"
               name="acctNo"
-              rules={[{ required: true, message: "账户号必填" }]}
             >
-              <Input placeholder="账户号" />
+              <Input placeholder="账户号" disabled={inputDisabled} />
             </FormItem>
             <FormItem
               label="账户名"
               name="acctName"
-              rules={[{ required: true, message: "账户名必填" }]}
             >
-              <Input placeholder="账户名" />
+              <Input placeholder="账户名" disabled={inputDisabled} />
             </FormItem>
             <FormItem
               label="开户行"
               name="bankName"
-              rules={[{ required: true, message: "开户行必填" }]}
             >
-              <Input placeholder="开户行" />
+              <Input placeholder="开户行" disabled={inputDisabled} />
             </FormItem>
             <FormItem
               label="开户行行号"
               name="bankCode"
             >
-              <Input placeholder="开户行行号" />
+              <Input placeholder="开户行行号" disabled={inputDisabled} />
             </FormItem>
             <FormItem
               label="金额"

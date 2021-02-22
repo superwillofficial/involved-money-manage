@@ -79,3 +79,20 @@ export function caseFundDetailProcessing(data) {
     };
   });
 }
+
+/**
+ * 处理资金分配的数据
+ *
+ * @export
+ * @param {Object} data
+ * @return {Array} data 处理过后的对象数组
+ */
+export function fundDistPrc(data) {
+  let obj = { ...data };
+  return _.omit(obj, [
+    'acctNo',
+    'acctName',
+    'bankName',
+    'bankCode',
+  ]);
+}

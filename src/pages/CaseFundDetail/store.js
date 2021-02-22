@@ -14,6 +14,7 @@ class Store extends BaseStore {
   @observable _case = {};
   @observable _originalFund = [];
   @observable _fund = [];
+  @observable _nonTexAccts = [];
   @observable _suspect = {};
   @observable _currentVictim = {};
   @observable _currentFundManagement = {};
@@ -87,6 +88,24 @@ class Store extends BaseStore {
     return this.global.caseStore;
   }
 
+  @computed
+  get nonTexAccts() {
+    return toJS(this._nonTexAccts);
+  }
+
+  @action
+  getNonTexAccts = async () => {
+    const res = await this.axios({
+      method: 'GET',
+      url: `${this.baseUrl}/api/v1/nonTaxAcct`,
+      query: {
+        status: 0,
+      },
+    });
+    this
+      .setValue('nonTexAccts', _.get(res, 'data', []));
+  }
+
   @action
   getCaseDetail = async (id) => {
     const res = await this.axios({
@@ -111,7 +130,7 @@ class Store extends BaseStore {
   }
 
   @action
-  onApply= async () => {
+  onApply = async () => {
     const res = await this.axios({
       method: 'PUT',
       url: `${this.baseUrl}/api/v1/case-fund/apply/${this.case.id}`,
@@ -120,7 +139,7 @@ class Store extends BaseStore {
   }
 
   @action
-  onAudit= async (body) => {
+  onAudit = async (body) => {
     const res = await this.axios({
       method: 'PUT',
       url: `${this.baseUrl}/api/v1/case-fund/audit/${this.case.id}`,

@@ -29,7 +29,6 @@ class Store extends BaseStore {
     return this._nonTex;
   }
 
-
   @computed
   get nonTexAccts() {
     return toJS(this._nonTexAccts);
