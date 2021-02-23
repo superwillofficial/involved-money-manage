@@ -1,84 +1,74 @@
-import React, { useCallback, useRef, Fragment, useEffect } from "react";
+import React, { useCallback, Fragment, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
-import { Modal, Select, message, Form, Input, Row, Col } from "antd";
+import { Modal, Select, message, Form, Input } from "antd";
 import { useStore } from "../store";
 
 const FormItem = Form.Item;
 
-export default () =>
-  useObserver(() => {
-    const store = useStore();
-    const formRef = useRef({});
-    const Option = Select.Option;
+export default () => useObserver(() => {
+  const store = useStore();
+  const [form] = Form.useForm();
 
-    useEffect(() => {
-    }, []);
+  // 弹窗标题
+  const title = {
+    create: '新增机构',
+    edit: '修改机构',
+  }[store.type];
 
-    // 关闭弹窗
-    const onCancel = () => {
-      formRef.current.resetFields();
-      store.closeModal(store.type);
-    };
-    // 提交表单
-    const onFinish = () => {
-      formRef.current.validateFields().then(async values => {
-        if (store._type === "create") {
-          const res = await store.onOrgCreate(values);
-          if (res.code === 0) {
-            message.success('新增成功');
-          } else {
-            message.error('新增失败');
-          }
-          onCancel();
-        } else if (store._type === "edit") {
-          const data = _.assign(store.detail, values);
-          const res = await store.onOrgUpdate(data);
-          if (res.code === 0) {
-            message.success('编辑成功');
-          } else {
-            message.error('编辑失败');
-          }
-          onCancel();
-        }
+  useEffect(() => {
+    if(store.modal[store.type] && title === '修改机构') {
+      const detail = store.detail;
+      form.setFieldsValue({
+        value: detail.dictValue,
       });
-    };
+    }
+  }, [store.modal[store.type]]);
 
-    //表单布局
-    const formItemLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 14 }
-    };
-    return (
-      <Fragment>
-        {store.modal[store.type] ? (
-          <Modal
-            width="65%"
-            title={store.typeDesc}
-            visible={store.modal[store.type]}
-            onCancel={onCancel}
-            onOk={onFinish}
+  // 关闭弹窗
+  const onCancel = () => {
+    form.resetFields();
+    store.closeModal(store.type);
+  };
+
+  // 提交表单
+  const onFinish = async () => {
+    await form.validateFields();
+    if (title === "新增机构") {
+      const res = await store.onOrgCreate(form.getFieldsValue());
+      res.code === 0 ? message.success('新增成功') : message.error('新增失败');
+      onCancel();
+    } else if (title === "修改机构") {
+      const res = await store.onOrgUpdate(form.getFieldsValue());
+      res.code === 0 ? message.success('编辑成功') : message.error('编辑失败');
+      onCancel();
+    }
+  };
+
+  return (
+    <Fragment>
+      {store.modal[store.type] ? (
+        <Modal
+          width="35%"
+          title={title}
+          visible={store.modal[store.type] && title}
+          onCancel={onCancel}
+          onOk={onFinish}
+        >
+          <Form
+            colon={true}
+            form={form}
           >
-            <Form
-              colon={true}
-              ref={formRef}
-              initialValues={store.detail}
-              {...formItemLayout}
+            <FormItem
+              label="名称"
+              name="value"
+              rules={[{ required: true, message: "名称必填" }]}
             >
-              <Row>
-                <Col span={8}>
-                  <FormItem
-                    label="名称"
-                    name="name"
-                    rules={[{ required: true, message: "名称必填" }]}
-                  >
-                    <Input placeholder="名称" />
-                  </FormItem>
-                </Col>
-              </Row>
-            </Form>
-          </Modal>
-        ) : null}
-      </Fragment>
-    );
-  });
+              <Input placeholder="名称" />
+            </FormItem>
+          </Form>
+        </Modal>
+      ) : null}
+    </Fragment>
+  );
+});
