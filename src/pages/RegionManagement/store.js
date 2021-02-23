@@ -17,11 +17,6 @@ class Store extends BaseStore {
   @observable _orgList = [];
   @observable _type = "create";
   @observable _detail = {};
-  @observable _page = {
-    total: 0,
-    pageSize: 10,
-    current: 1
-  };
 
   constructor(global) {
     super();
@@ -47,10 +42,6 @@ class Store extends BaseStore {
   get type() {
     return this._type;
   }
-  @computed
-  get typeDesc() {
-    return this._type === "create" ? "新增" : "编辑";
-  }
 
   @computed
   get optionStore() {
@@ -58,31 +49,25 @@ class Store extends BaseStore {
   }
 
   @action
-  onOrgList = async (name = '') => {
+  onOrgList = async () => {
     return await axios({
       methods: "GET",
-      // url: `${this.baseUrl}/organization`,
-      url: `http://101.132.98.20:3001/mock/57/api/v1/organization/list`,
-      query: {
-        name,
-        pageSize: this.page.pageSize,
-        pageIndex: this.page.current,
-      }
+      url: `${this.baseUrl}/api/v1/dict/policeStation`,
     }).then(res => {
       // console.log(res);
-      this.setValue("orgList", _.get(res, "data"))
-        .setPatch('page', _.get(res, 'page', {}));
+      this.setValue("orgList", _.get(res, "data"));
     });
   };
 
   @action
-  onOrgCreate = async body => {
-    console.log(body);
+  onOrgCreate = async (body) => {
     return await axios({
       method: "POST",
-      // url: `${this.baseUrl}/organization`,
-      url: `http://101.132.98.20:3001/mock/57/api/v1/organization`,
-      body: body
+      url: `${this.baseUrl}/api/v1/dict`,
+      body: {
+        sub: 'policeStation',
+        ...body
+      }
     }).then(async (res) => {
       await this.onOrgList();
       return res;
@@ -90,13 +75,10 @@ class Store extends BaseStore {
   };
 
   @action
-  onOrgDelete = async id => {
-    console.log(id);
+  onOrgDelete = async (id) => {
     return await axios({
       method: "DELETE",
-      // url: `${this.baseUrl}/organization`,
-      url: `http://101.132.98.20:3001/mock/57/api/v1/organization/:${id}`,
-      query: { id: id }
+      url: `${this.baseUrl}/api/v1/dict/${id}`,
     }).then(async (res) => {
       await this.onOrgList();
       return res;
@@ -104,18 +86,14 @@ class Store extends BaseStore {
   };
 
   @action
-  onOrgUpdate = async body => {
-    // console.log(await axios({
-    //   method: "PUT",
-    //   url: `${this.baseUrl}/organization/${body.id}`,
-    //   body: body
-    // }).then());
-    console.log(body);
+  onOrgUpdate = async (body) => {
     return await axios({
       method: "PUT",
-      // url: `${this.baseUrl}/organization/${body.id}`,
-      url: `http://101.132.98.20:3001/mock/57/api/v1/organization/:${body.id}`,
-      body: body
+      url: `${this.baseUrl}/api/v1/dict/${this.detail.id}`,
+      body: {
+        sub: 'policeStation',
+        ...body
+      }
     }).then(async (res) => {
       console.log(res);
       await this.onOrgList();

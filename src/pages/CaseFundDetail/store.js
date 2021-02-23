@@ -159,6 +159,7 @@ class Store extends BaseStore {
         ...party,
       ],
     });
+    await this.getCaseDetail(this.case.id);
     return this.onHandleResult(res);
   }
 
@@ -171,6 +172,7 @@ class Store extends BaseStore {
         ...party,
       },
     });
+    await this.getCaseDetail(this.case.id);
     return this.onHandleResult(res);
   }
 
