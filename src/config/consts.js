@@ -110,6 +110,60 @@ export const CASESTATUS_COLOR = {
 };
 
 /**
+ * 案件状态
+ * for 案件管理
+ */
+export const CASESTATUS_FOR_CASE_MANAGEMENT_QUERY = {
+  AWAITING_PAYMENT: [0, 3].join(','),
+  ALL: '',
+  PAID_CONFIRMED: [4, 5, 6, 7, 8, 9, 10, 11].join(','),
+};
+export const CASESTATUS_FOR_CASE_MANAGEMENT_QUERY_DESC = {
+  [CASESTATUS_FOR_CASE_MANAGEMENT_QUERY.AWAITING_PAYMENT]: '缴费中',
+  [CASESTATUS_FOR_CASE_MANAGEMENT_QUERY.ALL]: '全部',
+  [CASESTATUS_FOR_CASE_MANAGEMENT_QUERY.PAID_CONFIRMED]: '已确认缴费',
+};
+export const CASESTATUS_FOR_CASE_MANAGEMENT_TABLE_DESC = {
+  // [CASESTATUS.ABANDONED]: '作废',
+  [CASESTATUS.INPUTING]: '录入状态',
+  // [CASESTATUS.INPUT_REVIEWING]: '提交录入审核',
+  // [CASESTATUS.INPUT_REVIEW_FAILED]: '录入审核不通过',
+  [CASESTATUS.UNPAID]: '待缴费',
+  [CASESTATUS.PAID]: '确认缴费',
+  [CASESTATUS.RECHECKING]: '确认缴费',
+  [CASESTATUS.RECHECK_FAILED]: '确认缴费',
+  [CASESTATUS.RECHECKED]: '确认缴费',
+  [CASESTATUS.PAYING]: '确认缴费',
+  [CASESTATUS.PAYMENT_ERROR]: '确认缴费',
+  [CASESTATUS.BILLING_ADJUSTMENT]: '确认缴费',
+  [CASESTATUS.BILLING_RECHECKING]: '确认缴费',
+  [CASESTATUS.COMPENSATED]: '赔付完成',
+};
+
+/**
+ * 案件状态
+ * for 案件资金处置
+ */
+export const CASESTATUS_FOR_CASE_FUND_MGT_QUERY = {
+  UNPAID: 3,
+  PAID: 4,
+  RECHECKING: 5,
+  RECHECK_FAILED: 6,
+  ALL: [3, 4, 5, 6].join(','),
+};
+
+/**
+ * 案件状态
+ * for 案件资金审核
+ */
+export const CASESTATUS_FOR_CASE_FUND_AUDIT_QUERY = {
+  RECHECKING: 5,
+  RECHECK_FAILED: 6,
+  RECHECKED: 7,
+  PAYING: 8,
+};
+
+/**
  * 支付类型
  */
 export const PAYMENT_TYPE = {

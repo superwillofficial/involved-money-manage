@@ -22,26 +22,25 @@ export default () => useObserver(() => {
   const onCancel = () => {
     form.resetFields();
     store.closeModal(store.type);
+    store.setValue('type', 'fundMgt').openModal('fundMgt');
   };
 
   const onFinish = async () => {
     await form.validateFields();
     const data = form.getFieldsValue();
-
+    console.log(data);
     let fund = [...store.fund];
     if (title === '新增资金拆分') {
       const index = _.findIndex(fund, (el) => {
-        return el.subAcct === store.currentSubAcct;
+        return el.subAcctId === store.currentSubAcct;
       });
       fund[index].outcomeList.push(data);
     } else if (title === '编辑资金拆分') {
-      // TODO : 找索引 find the index
-      // const index1 = _.findIndex(fund, (el) => {
-      //   return el.subAcct === store.currentSubAcct;
-      // });
-      // fund[index].outcomeList.push(data);
+      const index = _.findIndex(fund, (el) => {
+        return el.subAcctId === store.currentFundManagement.subAcctId;
+      });
+      fund[index].outcomeList[store.indexOfSubAcct] = data;
     }
-
     store.setValue('fund', fund);
 
     onCancel();
@@ -226,7 +225,7 @@ export default () => useObserver(() => {
                     {
                       _.map(
                         store.nonTexAccts,
-                        v => <Select.Option key={v.acctNo} value={v.acctNo}>
+                        v => <Select.Option key={v.acctNo} value={v.id}>
                           {v.acctName}</Select.Option>
                       )
                     }

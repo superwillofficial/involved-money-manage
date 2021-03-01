@@ -51,7 +51,7 @@ const useColumns = () => {
         return (
           <Badge
             status={store.consts.CASESTATUS_COLOR[text]}
-            text={store.consts.CASESTATUS_DESC[text]}
+            text={store.consts.CASESTATUS_FOR_CASE_MANAGEMENT_TABLE_DESC[text]}
           />
         );
       }
@@ -93,7 +93,6 @@ const usePagination = () => {
   };
 
   useEffect(() => {
-    store.getCases();
   }, []);
 
   return {

@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
-import { Table, Popconfirm, Button } from "antd";
+import { Table, Popconfirm, Button, message } from "antd";
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { onColumn } from "@utils/table";
 import { useStore } from "../store";
@@ -38,8 +38,17 @@ const useColumns = () => {
 
               }}
             >修改</Button>
-            <Button type="link">打印缴款单</Button>
-            <Button type="link">分配子账户</Button>
+            <Button
+              type="link"
+            >打印缴款单</Button>
+            <Button
+              type="link"
+              onClick={async () => {
+                console.log(record);
+                const res = await store.distSubAcct(record.partyId);
+                res ? message.success('分配子账户成功!') : message.error('分配子账户失败!');
+              }}
+            >分配子账户</Button>
             <Popconfirm
               title="确认要删除?"
               onConfirm={async () => await store.onDelete(record.partyId)}

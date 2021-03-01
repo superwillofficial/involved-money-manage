@@ -101,6 +101,22 @@ class Store extends BaseStore {
     this.getCaseDetail(this.id);
   }
 
+  // 分配子账户
+  @action
+  distSubAcct = async (party) => {
+    const res = await this.axios({
+      method: 'POST',
+      url: `${this.baseUrl}/api/v1/case/sub-acct`,
+      body: {
+        caseId: this.case.id,
+        partyId: party,
+        mainAcctId: 1, // 后续接收参数扩充
+      },
+    });
+    this.getCaseDetail(this.id);
+    return this.onHandleResult(res);
+  }
+
   onHandleResult = (res) => {
     return _.get(res, 'code') === this.sysConsts.RESP_CODE.SUCCESS;
   }

@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
-import { Table, Button, message, Popconfirm, Card, Image } from "antd";
+import { Table, Button, message, Popconfirm, Card, Image, Tabs } from "antd";
 import { useHistory } from 'react-router-dom';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { onColumn } from "@utils/table";
-import { caseFundDetailProcessing } from "@utils/functions";
+import { caseFundDetailProcessing, whileStatistics } from "@utils/functions";
 import { useStore } from "../store";
+
+const { TabPane } = Tabs;
 
 const useMainColumns = () => {
   const store = useStore();
@@ -17,25 +19,9 @@ const useMainColumns = () => {
         );
       }
     }),
-    onColumn("子账号", "subAcct"),
+    onColumn("子账号", "subAcctId"),
     onColumn("身份证号码", "idNumber"),
     onColumn("金额", "amount"),
-    onColumn("操作", "operation", {
-      render: (text, record) => {
-        if (store.case.status === store.consts.CASESTATUS.PAID ||
-          store.case.status === store.consts.CASESTATUS.RECHECK_FAILED) {
-          return (
-            <Button
-              type="link"
-              onClick={() => {
-                store.setValue('currentSubAcct', record.subAcct);
-                store.setValue('type', 'newSplit').openModal('newSplit');
-              }}
-            >新增资金处理</Button>
-          );
-        }
-      }
-    }),
   ];
 };
 
@@ -51,26 +37,6 @@ const useExpandedColumns = () => {
     onColumn("开户行", "bankName"),
     onColumn("账户名", "acctName"),
     onColumn("金额", "amount"),
-    onColumn("操作", "operation", {
-      render: (text, record) => {
-        if (store.case.status === store.consts.CASESTATUS.PAID ||
-          store.case.status === store.consts.CASESTATUS.RECHECK_FAILED) {
-          return (
-            <Fragment>
-              <EditOutlined
-                onClick={() => {
-                  console.log("currentFundManagement", record);
-                  store.setValue('currentFundManagement', record);
-                  store.setValue('type', 'editSplit').openModal('editSplit');
-                }}
-              />
-              &nbsp; &nbsp;
-              <DeleteOutlined />
-            </Fragment>
-          );
-        }
-      }
-    }),
   ];
 };
 
@@ -78,6 +44,7 @@ export default () => useObserver(() => {
   const store = useStore();
   const history = useHistory();
   const fundData = caseFundDetailProcessing(store.fund);
+  const statisticsData = whileStatistics(store.fund);
   const mainColumns = useMainColumns();
   const expandedColumns = useExpandedColumns();
   const imageArray = [
@@ -125,7 +92,7 @@ export default () => useObserver(() => {
       />
       <div
         className="upload-font"
-      >Upload</div>
+      >上传</div>
     </div>
   );
 
@@ -142,12 +109,65 @@ export default () => useObserver(() => {
     );
   };
 
-  useEffect(() => {
-
-  });
   return (
     <Fragment>
       <div className="title-font button-top button-bottom">资金处置方案</div>
+      {store.case.status === store.consts.CASESTATUS.PAID ||
+        store.case.status === store.consts.CASESTATUS.RECHECK_FAILED ?
+        <>
+          <Button
+            type="primary"
+            size="middle"
+            shape="round"
+            className="button-bottom-short"
+            onClick={() => {
+              store.setValue('type', 'fundMgt').openModal('fundMgt');
+            }}
+          >录入资金处理</Button>
+          <span>&nbsp;&nbsp;</span>
+        </> : null}
+      {store.case.status === store.consts.CASESTATUS.PAID ||
+        store.case.status === store.consts.CASESTATUS.RECHECK_FAILED ?
+        <Button
+          type="primary"
+          size="middle"
+          shape="round"
+          className="button-bottom-short"
+          onClick={async () => {
+            const res = await store.onApply();
+            res ? message.success('提交复核成功！') : message.error('提交复核失败');
+            history.goBack();
+          }}
+        >提交复核</Button> : null}
+      {store.case.status === store.consts.CASESTATUS.RECHECKING ?
+        <Button
+          type="primary"
+          size="middle"
+          shape="round"
+          className="button-bottom-short"
+          onClick={() => {
+            store.setValue('type', 'recheck').openModal('recheck');
+          }}
+        >复核</Button> : null}
+      <Tabs defaultActiveKey="statistics">
+        <TabPane tab="资金处理统计" key="statistics">
+          <Table
+            rowKey={record => record.acctNo}
+            columns={expandedColumns}
+            dataSource={statisticsData}
+            pagination={false}
+          />
+        </TabPane>
+        <TabPane tab="资金处理明细" key="detail">
+          <Table
+            rowKey="subAcctId"
+            columns={mainColumns}
+            expandable={{ expandedRowRender }}
+            dataSource={fundData}
+            pagination={false}
+          />
+        </TabPane>
+      </Tabs>
       <div
         style={{
           display: 'flex',
@@ -156,7 +176,9 @@ export default () => useObserver(() => {
           marginBottom: 20,
         }}
       >
-        <div>影像资料：</div>
+        <div
+          className="grey-font"
+        >处置依据: &nbsp;</div>
         {store.case.status === store.consts.CASESTATUS.INPUTING ||
           store.case.status === store.consts.CASESTATUS.PAID ?
           _.map(imageArray, (item, index) =>
@@ -207,60 +229,6 @@ export default () => useObserver(() => {
         {store.case.status === store.consts.CASESTATUS.INPUTING ||
           store.case.status === store.consts.CASESTATUS.PAID ? uploadButton : null}
       </div>
-      {store.case.status === store.consts.CASESTATUS.PAID ||
-        store.case.status === store.consts.CASESTATUS.RECHECK_FAILED ?
-        <Button
-          type="primary"
-          size="middle"
-          shape="round"
-          className="button-bottom-short"
-          onClick={async () => {
-            const res = await store.onApply();
-            res ? message.success('提交复核成功！') : message.error('提交复核失败');
-            history.goBack();
-          }}
-        >提交复核</Button> : null}
-      {store.case.status === store.consts.CASESTATUS.RECHECKING ?
-        <Button
-          type="primary"
-          size="middle"
-          shape="round"
-          className="button-bottom-short"
-          onClick={() => {
-            store.setValue('type', 'recheck').openModal('recheck');
-          }}
-        >复核</Button> : null}
-      <Table
-        rowKey="subAcct"
-        columns={mainColumns}
-        expandable={{ expandedRowRender }}
-        dataSource={fundData}
-        pagination={false}
-      />
-      {store.case.status === store.consts.CASESTATUS.PAID ||
-        store.case.status === store.consts.CASESTATUS.RECHECK_FAILED ?
-        <div
-          className="button-group"
-        >
-          <Popconfirm
-            title="确认要取消?"
-            onConfirm={() => {
-              store.setValue('fund', store.originalFund);
-            }}
-          >
-            <Button
-              shape="round"
-            >取消</Button>
-          </Popconfirm>
-          <Button
-            type="primary"
-            shape="round"
-            onClick={() => {
-
-            }}
-          >确认</Button>
-        </div> : null
-      }
     </Fragment>
   );
 });

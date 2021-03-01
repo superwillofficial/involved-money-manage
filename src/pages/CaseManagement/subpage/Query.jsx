@@ -1,7 +1,7 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
-import { Button, Form, Col, DatePicker, Input, Radio } from "antd";
+import { Button, Form, Col, DatePicker, Input, Radio, Select } from "antd";
 import moment from 'moment';
 import { useStore } from "../store";
 import { dataProcess } from '@utils/functions';
@@ -20,8 +20,19 @@ export default () => useObserver(() => {
 
   const onReset = async () => {
     form.resetFields();
-    await store.getCases();
+    form.setFieldsValue({
+      status: store.consts.CASESTATUS_FOR_CASE_MANAGEMENT_QUERY.AWAITING_PAYMENT,
+    });
+    await store.getCases(form.getFieldsValue());
   };
+
+  useEffect(() => {
+    form.setFieldsValue({
+      status: store.consts.CASESTATUS_FOR_CASE_MANAGEMENT_QUERY.AWAITING_PAYMENT,
+    });
+
+    store.getCases(form.getFieldsValue());
+  }, []);
 
   // 表单布局
   const formItemLayout = {
@@ -78,6 +89,23 @@ export default () => useObserver(() => {
                   }}
                   format="YYYY-MM-DD"
                 />
+              </FormItem>
+            </Col>
+            <Col span={6}>
+              <FormItem
+                label="状态"
+                name="status"
+              >
+                <Select
+                  placeholder="请选择状态"
+                >
+                  {
+                    _.map(store.consts.CASESTATUS_FOR_CASE_MANAGEMENT_QUERY, 
+                      v => <Select.Option key={v} value={v}>
+                      {store.consts.CASESTATUS_FOR_CASE_MANAGEMENT_QUERY_DESC[v]}</Select.Option>
+                    )
+                  }
+                </Select>
               </FormItem>
             </Col>
           </Fragment>

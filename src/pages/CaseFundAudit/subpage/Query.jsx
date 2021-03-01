@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
 import _ from "lodash";
 import { Button, Form, Col, DatePicker, Input, Radio, Select } from "antd";
@@ -18,10 +18,24 @@ export default () => useObserver(() => {
       await store.getCases(data) : await store.getCasesByParty(data);
   };
 
+  const defaultDisplay = async () => {
+    // 默认显示 5-提交复核
+    form.setFieldsValue({
+      status: store.consts.CASESTATUS_FOR_CASE_FUND_AUDIT_QUERY.RECHECKING,
+    });
+    await store.getCases({
+      status: store.consts.CASESTATUS_FOR_CASE_FUND_AUDIT_QUERY.RECHECKING,
+    });
+  };
+
   const onReset = async () => {
     form.resetFields();
-    await store.getCases();
+    defaultDisplay();
   };
+
+  useEffect(() => {
+    defaultDisplay();
+  }, []);
 
   // 表单布局
   const formItemLayout = {
@@ -90,15 +104,9 @@ export default () => useObserver(() => {
                   placeholder="请选择状态"
                 >
                   {
-                    _.map(_.omit(store.consts.CASESTATUS, [
-                      'ABANDONED',
-                      'INPUTING',
-                      'INPUT_REVIEWING',
-                      'INPUT_REVIEW_FAILED',
-                      'BILLING_ADJUSTMENT',
-                      'BILLING_RECHECKING',
-                    ]), v => <Select.Option key={v} value={v}>
-                      {store.consts.CASESTATUS_DESC[v]}</Select.Option>
+                    _.map(store.consts.CASESTATUS_FOR_CASE_FUND_AUDIT_QUERY,
+                      v => <Select.Option key={v} value={v}>
+                        {store.consts.CASESTATUS_DESC[v]}</Select.Option>
                     )
                   }
                 </Select>
