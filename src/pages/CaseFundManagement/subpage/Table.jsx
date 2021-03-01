@@ -72,8 +72,9 @@ const useColumns = () => {
               <Button
                 type="link"
                 onClick={async () => {
-                  const res = await store.onConfirm(record.id);
-                  res ? message.success('确认入账成功！') : message.error('确认入账失败');
+                  store.setValue('type', 'confirm').openModal('confirm');
+                  store.setValue('currentCase', record);
+                  store.getCaseFundDetail(record.id);
                 }}
               >确认入账</Button> : null}
             &nbsp;&nbsp;
@@ -119,7 +120,6 @@ export default () => useObserver(() => {
   const columns = useColumns();
   const store = useStore();
   const pagination = usePagination();
-  const history = useHistory();
   const data = _.filter(store.cases, (el) => {
     return el.status !== -1;
   });

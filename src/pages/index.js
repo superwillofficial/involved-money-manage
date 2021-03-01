@@ -17,5 +17,6 @@ export { default as CaseFundManagement } from './CaseFundManagement';
 export { default as CaseFundAudit } from './CaseFundAudit';
 export { default as CaseFundDetail } from './CaseFundDetail';
 
-// 非税账户管理
+// 账户管理
+export { default as SpecialAccountManagement } from './SpecialAccountManagement';
 export { default as NonTexAccountManagement } from './NonTexAccountManagement';

@@ -164,6 +164,38 @@ export const CASESTATUS_FOR_CASE_FUND_AUDIT_QUERY = {
 };
 
 /**
+ * 签约状态
+ */
+export const SIGNMENT_STATUS = {
+  SIGNED: 0,
+  UNSIGNED: 1,
+};
+export const SIGNMENT_STATUS_DESC = {
+  [SIGNMENT_STATUS.SIGNED]: '已签约',
+  [SIGNMENT_STATUS.UNSIGNED]: '未签约',
+};
+export const SIGNMENT_STATUS_COLOR = {
+  [SIGNMENT_STATUS.SIGNED]: 'success',
+  [SIGNMENT_STATUS.UNSIGNED]: 'error',
+};
+
+/**
+ * 子账户状态
+ */
+export const SUBACCOUNT_STATUS = {
+  IN_USE: 0,
+  NOT_IN_USE: 1,
+};
+export const SUBACCOUNT_STATUS_DESC = {
+  [SUBACCOUNT_STATUS.IN_USE]: '使用中',
+  [SUBACCOUNT_STATUS.NOT_IN_USE]: '非使用中',
+};
+export const SUBACCOUNT_STATUS_COLOR = {
+  [SUBACCOUNT_STATUS.IN_USE]: 'success',
+  [SUBACCOUNT_STATUS.NOT_IN_USE]: 'error',
+};
+
+/**
  * 支付类型
  */
 export const PAYMENT_TYPE = {

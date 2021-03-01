@@ -50,11 +50,22 @@ module.exports = {
     component: 'CaseFundDetail', nav: false, exact: true,
   },
 
+  // 账户管理
+  AccountManagement: {
+    text: '账户管理', path: '/account-management', parent: 'Index',
+    component: 'AccountManagement', nav: true, exact: true,
+  },
+
+  // 专户管理
+  SpecialAccountManagement: {
+    text: '专户管理', path: '/account-management/special-account-management', 
+    parent: 'AccountManagement', component: 'SpecialAccountManagement', nav: true, exact: true,
+  },
+
   // 非税账户管理
   NonTexAccountManagement: {
-    text: '非税账户管理', path: '/non-tex-management', parent: 'Index',
-    component: 'NonTexAccountManagement', nav: true, exact: true,
-
+    text: '非税账户管理', path: '/account-management/non-tex-management', 
+    parent: 'AccountManagement', component: 'NonTexAccountManagement', nav: true, exact: true,
   },
 
   // 系统配置
