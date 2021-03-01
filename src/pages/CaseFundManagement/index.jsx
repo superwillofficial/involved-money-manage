@@ -1,7 +1,7 @@
 import React from 'react';
 import Query from './subpage/Query';
 import Table from './subpage/Table';
-import Modal from './subpage/Modal';
+import ConfirmModal from './subpage/ConfirmModal';
 import Store from './store';
 import '../index.less';
 
@@ -15,8 +15,8 @@ export default () => {
       {/* 表格 */}
       <Table />
 
-      {/* 弹窗 */}
-      <Modal />
+      {/* 确认缴费弹窗 */}
+      <ConfirmModal />
 
     </Store>
   );

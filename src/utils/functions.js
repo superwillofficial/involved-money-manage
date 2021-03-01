@@ -83,6 +83,30 @@ export function caseFundDetailProcessing(data) {
 }
 
 /**
+ * 处理案件资金明细的数据
+ * for 案件资金管理
+ *
+ * @export
+ * @param {Array} data
+ * @return {Array} data 处理过后的对象数组
+ */
+export function forPaymentConfirm(data) {
+  if (_.isEmpty(data)) return [];
+  let arr = [...data];
+  return _.map(arr, el => {
+    const amountSum = _.reduce(el.incomeList.map(obj => obj.amount), (sum, item) => sum + item, 0);
+    return {
+      subAcctId: el.subAcctId,
+      partyId: el.incomeList[0].partyId,
+      partyName: el.incomeList[0].partyName,
+      idNo: el.incomeList[0].idNo,
+      amount: amountSum,
+      incomeList: el.incomeList,
+    };
+  });
+}
+
+/**
  * 处理案件处置统计的数据
  *
  * @export

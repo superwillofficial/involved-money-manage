@@ -12,12 +12,14 @@ import BaseStore from '@stores/BaseStore';
  */
 class Store extends BaseStore {
   @observable _cases = [];
+  @observable _fund = [];
   @observable _page = {
     total: 0,
     pageSize: 10,
     current: 1,
   };
   @observable _query = {};
+  @observable _currentCase = {};
   @observable _type = 'input';
 
   constructor(global) {
@@ -41,8 +43,13 @@ class Store extends BaseStore {
   }
 
   @computed
-  get typeDesc() {
-    return this._type === 'input' ? '案件录入' : '';
+  get currentCase() {
+    return toJS(this._currentCase);
+  }
+
+  @computed
+  get fund() {
+    return toJS(this._fund);
   }
 
   @computed
@@ -98,10 +105,30 @@ class Store extends BaseStore {
   }
 
   @action
+  getCaseFundDetail = async (id) => {
+    const res = await this.axios({
+      method: 'GET',
+      url: `${this.baseUrl}/api/v1/case-fund/detail/${id}`,
+      query: {},
+    });
+    this.setValue('fund', _.get(res, 'data', []));
+  }
+
+  @action
   onConfirm = async (id) => {
     const res = await this.axios({
       method: 'PUT',
       url: `${this.baseUrl}/api/v1/case-fund/confirm/${id}`
+    });
+    this.getCases();
+    return this.onHandleResult(res);
+  }
+
+  @action
+  onSync = async (id) => {
+    const res = await this.axios({
+      method: 'GET',
+      url: `${this.baseUrl}/api/v1/case-fund/sync/${id}`
     });
     this.getCases();
     return this.onHandleResult(res);
