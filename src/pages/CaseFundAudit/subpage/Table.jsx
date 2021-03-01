@@ -101,7 +101,6 @@ const usePagination = () => {
   };
 
   useEffect(() => {
-    store.getCases();
   }, []);
 
   return {

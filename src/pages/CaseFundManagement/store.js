@@ -59,7 +59,7 @@ class Store extends BaseStore {
       method: 'GET',
       url: `${this.baseUrl}/api/v1/case`,
       query: {
-        // ...query,
+        ...query,
         showVictim: true,
         // pageSize: this.page.pageSize,
         // pageIndex: this.page.current,

@@ -14,12 +14,14 @@ class Store extends BaseStore {
   @observable _case = {};
   @observable _originalFund = [];
   @observable _fund = [];
+  @observable _caseProcedure = [];
   @observable _nonTexAccts = [];
   @observable _suspect = {};
   @observable _currentVictim = {};
   @observable _currentFundManagement = {};
   @observable _id = '';
   @observable _currentSubAcct = '';
+  @observable _indexOfSubAcct = 0;
   @observable _page = {
     total: 0,
     pageSize: 10,
@@ -49,6 +51,11 @@ class Store extends BaseStore {
   }
 
   @computed
+  get indexOfSubAcct() {
+    return this._indexOfSubAcct;
+  }
+
+  @computed
   get page() {
     return toJS(this._page);
   }
@@ -66,6 +73,11 @@ class Store extends BaseStore {
   @computed
   get fund() {
     return toJS(this._fund);
+  }
+
+  @computed
+  get caseProcedure() {
+    return toJS(this._caseProcedure);
   }
 
   @computed
@@ -119,6 +131,15 @@ class Store extends BaseStore {
   }
 
   @action
+  getCaseProcedure = async (id) => {
+    const res = await this.axios({
+      method: 'GET',
+      url: `${this.baseUrl}/api/v1/case/operateLog/${id ? id : this.case.id}`,
+    });
+    this.setValue('caseProcedure', _.get(res, 'data', []));
+  }
+
+  @action
   getCaseFundDetail = async (id) => {
     const res = await this.axios({
       method: 'GET',
@@ -134,6 +155,22 @@ class Store extends BaseStore {
     const res = await this.axios({
       method: 'PUT',
       url: `${this.baseUrl}/api/v1/case-fund/apply/${this.case.id}`,
+    });
+    return this.onHandleResult(res);
+  }
+
+  @action
+  onDistribution = async () => {
+    console.log('this.fund==', this.fund);
+    const res = await this.axios({
+      method: 'POST',
+      url: `${this.baseUrl}/api/v1/case-fund/distribution/${this.case.id}`,
+      body: [..._.map(this.fund, (el) => {
+        return {
+          ...el,
+          detail: el.outcomeList
+        };
+      })] // 组装为所需的数据结构
     });
     return this.onHandleResult(res);
   }

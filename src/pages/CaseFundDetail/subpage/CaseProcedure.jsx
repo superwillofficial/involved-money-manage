@@ -1,27 +1,47 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useObserver } from "mobx-react-lite";
-import { Collapse, Tabs, Table } from "antd";
+import { Collapse, Tabs, Table, Badge } from "antd";
 import { onColumn } from "@utils/table";
 import { useStore } from "../store";
 
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
 
-// TODO
-const useColumns = (party) => {
+const useColumns = () => {
   const store = useStore();
   return [
-    onColumn('时间', "partyName"),
-    onColumn("操作人", "gender"),
-    onColumn("当前进度", "idNumber"),
+    onColumn('时间', "createTime"),
+    onColumn("操作人", "operator"),
+    onColumn("案件ID", "caseId"),
+    onColumn("说明备注", "remark"),
+    onColumn("操作前状态", "preStatus", {
+      render: (text, record) => {
+        return (
+          <Badge
+            status={store.consts.CASESTATUS_COLOR[text]}
+            text={store.consts.CASESTATUS_DESC[text]}
+          />
+        );
+      }
+    }),
+    onColumn("操作后状态", "curStatus", {
+      render: (text, record) => {
+        return (
+          <Badge
+            status={store.consts.CASESTATUS_COLOR[text]}
+            text={store.consts.CASESTATUS_DESC[text]}
+          />
+        );
+      }
+    }),
   ];
 };
 
 export default () => useObserver(() => {
   const store = useStore();
-  const caseData = store.case;
+  const caseProcedure = store.caseProcedure;
   const columns = useColumns();
-  // TODO
+
   return (
     <Fragment>
       <Collapse defaultActiveKey={['1']} ghost={true}>
@@ -31,9 +51,9 @@ export default () => useObserver(() => {
           key='1'
         >
           <Table
-            rowKey=""
+            rowKey="id"
             columns={columns}
-            // dataSource={}
+            dataSource={caseProcedure}
             pagination={false}
           />
         </Panel>

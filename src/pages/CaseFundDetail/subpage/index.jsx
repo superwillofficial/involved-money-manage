@@ -6,6 +6,7 @@ import FundManagementPlan from './FundManagementPlan';
 import CaseProcedure from './CaseProcedure';
 import VictimModal from './VictimModal';
 import FundSplittingModal from './FundSplittingModal';
+import FundMgtModal from './FundMgtModal';
 import RecheckModal from './RecheckModal';
 import UploadModal from './UploadModal';
 import { useStore } from '../store';
@@ -21,6 +22,7 @@ export default () => {
         .setValue('id', id)
         .getCaseDetail(id);
       store.getCaseFundDetail(id);
+      store.getCaseProcedure(id);
     }
   }, []);
   return (
@@ -41,6 +43,8 @@ export default () => {
       <VictimModal />
 
       <FundSplittingModal />
+
+      <FundMgtModal />
 
       <RecheckModal />
 

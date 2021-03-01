@@ -10,11 +10,11 @@ import { PARTY } from "@config/consts";
  */
 export function dataProcess(data) {
   let obj = { ...data };
-  if(data.date) {
+  if (data.date) {
     obj['start'] = data.date[0].format('YYYY-MM-DD 00:00:00');
     obj['end'] = data.date[1].format('YYYY-MM-DD 23:59:59');
   }
-  obj = _.omit(obj, ['date']); 
+  obj = _.omit(obj, ['date']);
   return obj;
 }
 
@@ -65,19 +65,51 @@ export function dataProcessingWhenCreatingSuspect(data) {
  * @return {Array} data 处理过后的对象数组
  */
 export function caseFundDetailProcessing(data) {
-  if(_.isEmpty(data)) return [];
+  if (_.isEmpty(data)) return [];
   let arr = [...data];
   return _.map(arr, el => {
     const amountSum = _.reduce(el.incomeList.map(obj => obj.amount), (sum, item) => sum + item, 0);
     return {
-      subAcct: el.subAcct,
+      subAcctId: el.subAcctId,
       partyId: el.incomeList[0].partyId,
       partyName: el.incomeList[0].partyName,
       idNo: el.incomeList[0].idNo,
       amount: amountSum,
-      outcomeList: [...el.outcomeList],
+      outcomeList: _.map([...el.outcomeList], item => {
+        return { ...item, subAcctId: el.subAcctId };
+      }), // 添加子账号索引，令其在修改时能找到父节点
     };
   });
+}
+
+/**
+ * 处理案件处置统计的数据
+ *
+ * @export
+ * @param {Array} data
+ * @return {Array} data 处理过后的数组
+ */
+export function whileStatistics(data) {
+  if (_.isEmpty(data)) return [];
+  let arr = [...data];
+  // 数组扁平化
+  const outcomeList = _.flattenDeep(_.map(arr, el => el.outcomeList));
+  const partys = ['0', '1'];
+  const treasury = ['2'];
+  let result = [];
+  // 对每一项结果进行处理
+  // 合并partyId或accNo相同的项的金额
+  _.forEach(outcomeList, (item, index) => {
+    if (_.includes(partys, item.type)) {
+      const index = _.findIndex(result, el => el.partyId === item.partyId);
+      index === -1 ? result.push(item) : result[index].amount += item.amount;
+    } else if (_.includes(treasury, item.type)) {
+      const index = _.findIndex(result, el => el.acctNo === item.acctNo);
+      index === -1 ? result.push(item) : result[index].amount += item.amount;
+    }
+  });
+  console.log('result', result);
+  return result;
 }
 
 /**
